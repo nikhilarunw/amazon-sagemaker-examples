@@ -13,6 +13,7 @@ S3_PREFIX="mask-rcnn/sagemaker/input"
 # Stage directory must be on EBS volume with 100 GB available space
 STAGE_DIR=$HOME/SageMaker/coco-2017-$(date +"%Y-%m-%d-%H-%M-%S")
 
+
 echo "Create stage directory: $STAGE_DIR"
 mkdir -p $STAGE_DIR
 

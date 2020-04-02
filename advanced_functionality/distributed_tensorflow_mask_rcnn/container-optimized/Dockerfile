@@ -1,4 +1,4 @@
-FROM  763104351884.dkr.ecr.us-west-2.amazonaws.com/tensorflow-training:1.13-horovod-gpu-py36-cu100-ubuntu16.04-v2.0
+FROM  tensorflow-base:1.13.1-gpu-py36
 
 ENV HOROVOD_VERSION=0.18.1
 
