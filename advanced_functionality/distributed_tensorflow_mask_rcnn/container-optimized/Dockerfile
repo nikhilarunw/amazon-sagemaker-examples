@@ -1,4 +1,4 @@
-FROM  tensorflow-base:1.13.1-gpu-py36
+FROM 393782509758.dkr.ecr.ap-southeast-1.amazonaws.com/invoice-extraction:tensorflow-base-1.13.1-gpu-py36-ubuntu-16.04
 
 ENV HOROVOD_VERSION=0.18.1
 
