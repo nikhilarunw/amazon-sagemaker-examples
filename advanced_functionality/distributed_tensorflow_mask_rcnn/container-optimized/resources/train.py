@@ -230,6 +230,64 @@ def train():
     except KeyError:
         resnet_arch = 'resnet50'
         
+    try:
+        rpn_anchor_stride = hyperparamters['rpn_anchor_stride']
+    except KeyError:
+        rpn_anchor_stride = 16
+        
+    try:
+        rpn_anchor_sizes = hyperparamters['rpn_anchor_sizes']
+    except KeyError:
+        rpn_anchor_sizes = '(32, 64, 128, 256, 512)'
+        
+    try:
+        rpn_anchor_ratios = hyperparamters['rpn_anchor_ratios']
+    except KeyError:
+        rpn_anchor_ratios = '(0.5, 1., 2.)'
+        
+    try:
+        rpn_positive_anchor_thresh = hyperparamters['rpn_positive_anchor_thresh']
+    except KeyError:
+        rpn_positive_anchor_thresh = 0.7
+        
+    try:
+        rpn_negative_anchor_thresh = hyperparamters['rpn_negative_anchor_thresh']
+    except KeyError:
+        rpn_negative_anchor_thresh = 0.3
+        
+    
+    try:
+        rpn_batch_per_im = hyperparamters['rpn_batch_per_im']
+    except KeyError:
+        rpn_batch_per_im = 256
+        
+        
+    try:
+        frcnn_batch_per_im = hyperparamters['frcnn_batch_per_im']
+    except KeyError:
+        frcnn_batch_per_im = 512
+        
+    try:
+        fpn_anchor_strides = hyperparamters['fpn_anchor_strides']
+    except KeyError:
+        fpn_anchor_strides = '(4, 8, 16, 32, 64)'
+        
+    try:
+        num_category = hyperparamters['num_category']
+    except KeyError:
+        num_category = 0
+        
+    try:
+        class_names = hyperparamters['class_names']
+    except KeyError:
+        class_names = ''
+        
+    try:
+        trainer = hyperparamters['trainer']
+    except KeyError:
+        trainer = 'horovod'
+        
+      
     resnet_num_blocks = '[3, 4, 6, 3]'
     if resnet_arch == 'resnet101':
         resnet_num_blocks = '[3, 4, 23, 3]'
@@ -273,10 +331,18 @@ DATA.VAL='("{data_val}",)' \
 TRAIN.BATCH_SIZE_PER_GPU={batch_size_per_gpu} \
 TRAIN.EVAL_PERIOD={eval_period} \
 TRAIN.LR_EPOCH_SCHEDULE='{lr_epoch_schedule}' \
+RPN.ANCHOR_STRIDE={rpn_anchor_stride} \
+RPN.ANCHOR_SIZES='{rpn_anchor_sizes}' \
+RPN.ANCHOR_RATIOS='{rpn_anchor_ratios}' \
+RPN.POSITIVE_ANCHOR_THRESH={rpn_positive_anchor_thresh} \
+RPN.NEGATIVE_ANCHOR_THRESH={rpn_negative_anchor_thresh} \
+RPN.BATCH_PER_IM={rpn_batch_per_im} \
+FPN.ANCHOR_STRIDES='{fpn_anchor_strides}' \
+FRCNN.BATCH_PER_IM={frcnn_batch_per_im} \
 RPN.TOPK_PER_IMAGE=True \
 PREPROC.PREDEFINED_PADDING=True \
 TRAIN.GRADIENT_CLIP=0 \
-TRAINER=horovod"""
+TRAINER='{trainer}'"""
 
     print("--------Begin MPI Run Command----------")
     print(mpirun_cmd)
@@ -284,7 +350,7 @@ TRAINER=horovod"""
     exitcode = 0
     try:
         process = subprocess.Popen(mpirun_cmd, encoding='utf-8', cwd="/mask-rcnn-tensorflow",
-            shell=True, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
+            shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
         while True:
             if process.poll() != None:
@@ -293,7 +359,7 @@ TRAINER=horovod"""
             output = process.stdout.readline()
             if output:
                 print(output.strip())
-
+                
         exitcode = process.poll() 
         print(f"mpirun exit code:{exitcode}")
         exitcode = 0 

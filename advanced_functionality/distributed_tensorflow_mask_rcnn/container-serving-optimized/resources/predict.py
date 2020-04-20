@@ -46,7 +46,40 @@ class MaskRCNNService:
                 cls.pretrained_model = os.environ['PRETRAINED_MODEL']
             except KeyError:
                 pass
-
+            
+            try:
+                div = int(eval(os.environ['divisor']))
+            except KeyError:
+                div = 1
+                pass
+            
+            rpn_anchor_stride = int(16/div)
+            rpn_anchor_sizes = ( int(32/div), int(64/div), int(128/div), int(256/div), int(512/div))
+            
+            
+            try:
+                rpn_anchor_stride = int(eval(os.environ['rpnanchor_stride']))
+            except KeyError:
+                pass
+            
+            try:
+                nms_topk = int(eval(os.environ['NMS_TOPK']))
+            except KeyError:
+                nms_topk = 2
+                pass
+            
+            try:
+                nms_thresh = eval(os.environ['NMS_THRESH'])
+            except KeyError:
+                nms_thresh = 0.7
+                pass
+            
+            try:
+                results_per_img = eval(os.environ['res_perimg'])
+            except KeyError:
+                results_per_img = 400
+                pass
+            
             # file path to previoulsy trained mask r-cnn model
             latest_trained_model = ""
             model_search_path = os.path.join(model_dir, "model-*.index" )
@@ -61,7 +94,17 @@ class MaskRCNNService:
             cfg.BACKBONE.WEIGHTS = os.path.join(cls.pretrained_model)
             cfg.MODE_FPN = True
             cfg.MODE_MASK = True
-
+            cfg.RPN.ANCHOR_STRIDE = rpn_anchor_stride
+            cfg.RPN.ANCHOR_SIZES = rpn_anchor_sizes
+            cfg.RPN.TEST_PRE_NMS_TOPK = int(6000*nms_topk)
+            cfg.RPN.TEST_POST_NMS_TOPK = int(1000*nms_topk)
+            cfg.RPN.TEST_PER_LEVEL_NMS_TOPK = int(1000*nms_topk)
+            # testing -----------------------
+            cfg.TEST.FRCNN_NMS_THRESH = nms_thresh
+            cfg.TEST.RESULT_SCORE_THRESH = 0.05
+            cfg.TEST.RESULT_SCORE_THRESH_VIS = 0.2   # only visualize confident results
+            cfg.TEST.RESULTS_PER_IM = results_per_img
+            
             # calling detection dataset gets the number of coco categories 
             # and saves in the configuration
             DetectionDataset()
@@ -101,6 +144,7 @@ class MaskRCNNService:
             a["bbox"] = [int(b[0]), int(b[1]), int(b[2] - b[0]), int(b[3] - b[1])]
                 
             if round(score,1) >= score_threshold:
+                a["score"] = str(round(score,2))
                 a["category_id"] = int(category_id)
                 a["category_name"] = cfg.DATA.CLASS_NAMES[int(category_id)]
                 b_mask = cls.get_binary_mask(img_shape, box, mask, threshold=mask_threshold)

@@ -1,4 +1,4 @@
-FROM  763104351884.dkr.ecr.us-west-2.amazonaws.com/tensorflow-training:1.13-horovod-gpu-py36-cu100-ubuntu16.04-v2.0
+FROM 393782509758.dkr.ecr.ap-southeast-1.amazonaws.com/invoice-extraction:tensorflow-base-1.13.1-gpu-py36-ubuntu-16.04
 
 ENV HOROVOD_VERSION=0.18.1
 
@@ -40,6 +40,8 @@ RUN pip install markdown==3.1
 RUN pip install numpy==1.17.5
 
 RUN git clone https://github.com/aws-samples/mask-rcnn-tensorflow
+RUN cd /mask-rcnn-tensorflow && git fetch origin 153442bc70b06e59f2bbeadc4d359b240f64cbc2
+RUN cd /mask-rcnn-tensorflow && git reset --hard 153442bc70b06e59f2bbeadc4d359b240f64cbc2
 
 RUN chmod -R +w /mask-rcnn-tensorflow
 RUN pip install -e /mask-rcnn-tensorflow/

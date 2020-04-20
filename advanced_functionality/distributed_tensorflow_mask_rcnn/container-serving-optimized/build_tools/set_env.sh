@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 
-export IMAGE_NAME=mask-rcnn-tensorflow-serving-sagemaker
-export IMAGE_TAG=tf1.13-153442b
+export IMAGE_NAME=mask-rcnn-tensorpack-serving-sagemaker
+export IMAGE_TAG=tf1.13-tp26664c3
