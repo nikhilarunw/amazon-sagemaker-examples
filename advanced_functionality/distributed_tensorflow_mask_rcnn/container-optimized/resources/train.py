@@ -198,12 +198,12 @@ def train():
     try:
         data_train = hyperparamters['data_train']
     except KeyError:
-        data_train = 'train2017'
+        data_train = '["train2017"]'
 
     try:
         data_val = hyperparamters['data_val']
     except KeyError:
-        data_val = 'val2017'
+        data_val = '("val2017",)'
 
     try:
         nccl_min_rings = hyperparamters['nccl_min_rings']
@@ -326,8 +326,8 @@ DATA.BASEDIR={train_data_dir} \
 BACKBONE.RESNET_NUM_BLOCKS='{resnet_num_blocks}' \
 BACKBONE.WEIGHTS={train_data_dir}/pretrained-models/{backbone_weights} \
 BACKBONE.NORM={batch_norm} \
-DATA.TRAIN='["{data_train}"]' \
-DATA.VAL='("{data_val}",)' \
+DATA.TRAIN='{data_train}' \
+DATA.VAL='{data_val}' \
 TRAIN.BATCH_SIZE_PER_GPU={batch_size_per_gpu} \
 TRAIN.EVAL_PERIOD={eval_period} \
 TRAIN.LR_EPOCH_SCHEDULE='{lr_epoch_schedule}' \
